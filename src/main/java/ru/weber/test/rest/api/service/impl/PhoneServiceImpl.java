@@ -25,6 +25,5 @@ public class PhoneServiceImpl implements PhoneService {
         }
         phoneRepository.updatePhone(phoneId, newPhone);
         log.debug("Phone: {} was update, phoneId: ", newPhone, phoneId);
-
     }
 }

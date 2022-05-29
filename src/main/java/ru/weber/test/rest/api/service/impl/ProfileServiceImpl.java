@@ -24,7 +24,7 @@ public class ProfileServiceImpl implements ProfileService {
         List<Profile> profiles = profileRepository.findAll();
         profiles.forEach(profile -> {
             if (profile.getMaxCash().compareTo(profile.getCash()) == 1) {
-                profile.setCash(profile.getCash().multiply(BigDecimal.valueOf(1.07)));
+                profile.setCash(profile.getCash().multiply(BigDecimal.valueOf(1.10)));
                 if (profile.getMaxCash().compareTo(profile.getCash()) == -1) {
                     profile.setCash(profile.getMaxCash());
                 }

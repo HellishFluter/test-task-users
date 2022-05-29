@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/test_task
+    url: ${POSTGRESQL_JDBC_URL:jdbc:postgresql://localhost:5432/test_task}
     driver-class-name: ${POSTGRESQL_JDBC_DRIVER:org.postgresql.Driver}
-    username: admin
-    password: admin
+    username: ${POSTGRESQL_JDBC_USERNAME:admin}
+    password: ${POSTGRESQL_JDBC_PASSWORD:admin}
 
   jpa:
     show-sql: false
