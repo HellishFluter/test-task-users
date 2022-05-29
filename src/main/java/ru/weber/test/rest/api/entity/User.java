@@ -3,7 +3,6 @@ package ru.weber.test.rest.api.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import ru.weber.test.rest.api.dto.UserUpdateDTO;
 
 import javax.persistence.*;

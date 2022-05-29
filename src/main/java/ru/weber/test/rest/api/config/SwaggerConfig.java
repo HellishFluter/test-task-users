@@ -20,8 +20,19 @@ public class SwaggerConfig {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("ru.weber.test.rest.api.controller"))
                 .paths(PathSelectors.any())
-                .build();
+                .build()
+                .globalRequestParameters(Collections.singletonList(authorizationParameter()));
     }
 
-
+    private RequestParameter authorizationParameter() {
+        RequestParameterBuilder tokenBuilder = new RequestParameterBuilder();
+        tokenBuilder
+                .name("Authorization")
+                .description("access_token")
+                .required(false)
+                .in("header")
+                .accepts(Collections.singleton(MediaType.APPLICATION_JSON))
+                .build();
+        return tokenBuilder.build();
+    }
 }

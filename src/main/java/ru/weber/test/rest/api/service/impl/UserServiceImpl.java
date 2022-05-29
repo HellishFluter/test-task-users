@@ -6,13 +6,16 @@ import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.weber.test.rest.api.dto.UserNewDTO;
 import ru.weber.test.rest.api.dto.UserUpdateDTO;
 import ru.weber.test.rest.api.entity.Phone;
 import ru.weber.test.rest.api.entity.User;
+import ru.weber.test.rest.api.entity.UserCredential;
 import ru.weber.test.rest.api.entity.exception.UserNotFoundException;
+import ru.weber.test.rest.api.repository.UserCredentialRepository;
 import ru.weber.test.rest.api.repository.UserRepository;
 import ru.weber.test.rest.api.repository.PhoneRepository;
 import ru.weber.test.rest.api.repository.specifications.UserSpecification;
@@ -23,6 +26,8 @@ import ru.weber.test.rest.api.service.UserService;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserCredentialRepository userCredentialRepository;
+    private final PasswordEncoder passwordEncoder;
     private final PhoneRepository phoneRepository;
     private final ModelMapper modelMapper;
 
@@ -49,7 +54,13 @@ public class UserServiceImpl implements UserService {
     public User saveUser(UserNewDTO userDTO) {
         User user = userDTO.getEntity(modelMapper);
         user = userRepository.save(user);
-        log.debug("User {} was saved", user.toString());
+
+        UserCredential userCredential = modelMapper.map(userDTO, UserCredential.class);
+        userCredential.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        userCredential.setUser(user);
+        userCredentialRepository.save(userCredential);
+
+        log.debug("User {} was created", user.toString());
         return user;
     }
 
@@ -88,10 +99,11 @@ public class UserServiceImpl implements UserService {
         log.debug("Email: {} was update for user with id {}", email, userId);
     }
 
+    @Transactional
     @Override
     public void deleteUserById(Long id) {
         if(userRepository.existsById(id)) {
-            userRepository.deleteById(id);
+            userCredentialRepository.deleteByUserId(id);
             log.debug("User with id: {} was deleted", id);
         } else {
             throw new UserNotFoundException(id);

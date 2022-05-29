@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.weber.test.rest.api.dto.UserNewDTO;
+import ru.weber.test.rest.api.dto.UserData;
 import ru.weber.test.rest.api.dto.UserUpdateDTO;
 import ru.weber.test.rest.api.entity.User;
 import ru.weber.test.rest.api.repository.specifications.UserSpecification;
@@ -20,14 +20,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
-    private UserService userService;
-    private PhoneService phoneService;
+    private final UserService userService;
+    private final PhoneService phoneService;
 
-    @GetMapping("/id={id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
+    private final UserData userData;
+
+    @GetMapping("/info")
+    public ResponseEntity<User> getInfo() {
+        return new ResponseEntity<>(userService.getUserById(userData.getUserId()), HttpStatus.OK);
     }
 
+    //TODO: доступ к getAll можно предоставлять не всем юзерам, однако в рамках данной тестовой задачи
+    // роли не выделялись и этот вопрос не решался
     @GetMapping("")
     public ResponseEntity<List<User>> getAll(
             @RequestParam Integer page,
@@ -49,37 +53,33 @@ public class UserController {
         return new ResponseEntity<>(pageUsers.getContent(), HttpStatus.OK);
     }
 
-    @PostMapping("")
-    public ResponseEntity<User> postUser(@RequestBody UserNewDTO userDTO) {
-        return new ResponseEntity<>(userService.saveUser(userDTO), HttpStatus.OK);
-    }
 
     @PutMapping("")
-    public ResponseEntity<User> updateUser(@RequestParam Long id, @RequestBody UserUpdateDTO userDTO) {//TODO: userId брать из авторизации когда будет
-        return new ResponseEntity<>(userService.updateUser(id, userDTO), HttpStatus.OK);
+    public ResponseEntity<User> updateUser(@RequestBody UserUpdateDTO userDTO) {
+        return new ResponseEntity<>(userService.updateUser(userData.getUserId(), userDTO), HttpStatus.OK);
     }
 
     @PatchMapping("/phone")
-    public ResponseEntity<?> updatePhone(@RequestParam Long id, @RequestBody String phoneNumber) {//TODO: добавить проверку что ИД юзера
-        phoneService.updatePhone(id, phoneNumber);
+    public ResponseEntity<?> updatePhone(@RequestParam Long phoneId, @RequestBody String phoneNumber) {
+        phoneService.updatePhone(phoneId, userData.getUserId(), phoneNumber);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/phone/new")
-    public ResponseEntity<?> addPhone(@RequestParam Long userId, @RequestBody String phoneNumber) {//TODO: userId брать из авторизации когда будет
-        userService.addPhone(userId, phoneNumber);
+    public ResponseEntity<?> addPhone(@RequestBody String phoneNumber) {
+        userService.addPhone(userData.getUserId(), phoneNumber);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/email")
-    public ResponseEntity<?> updateEmail(@RequestParam Long userId, @RequestBody String email) {//TODO: userId брать из авторизации когда будет
-        userService.updateEmail(userId, email);
+    public ResponseEntity<?> updateEmail(@RequestBody String email) {
+        userService.updateEmail(userData.getUserId(), email);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/id={id}")
-    public ResponseEntity<User> deleteUserById(@PathVariable Long id) {
-        userService.deleteUserById(id);
+    @DeleteMapping("")
+    public ResponseEntity<User> deleteUser() {
+        userService.deleteUserById(userData.getUserId());
         return ResponseEntity.ok().build();
     }
 }

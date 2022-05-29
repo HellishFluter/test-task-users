@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.weber.test.rest.api.dto.ErrorResponse;
-import ru.weber.test.rest.api.entity.exception.UserNotFoundException;
+import ru.weber.test.rest.api.entity.exception.*;
 
 import javax.validation.ConstraintViolationException;
 
@@ -54,4 +54,27 @@ public class ExceptionAdvice {
                 HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleLoginExistEcxeption(LoginExistException ex) {
+        log.info(ex.getMessage());
+        return new ResponseEntity(
+                new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), System.currentTimeMillis()),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handlePhoneNotFoundException(PhoneNotFoundException ex) {
+        log.error(ex.getMessage());
+        return new ResponseEntity(
+                new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage(), System.currentTimeMillis()),
+                HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleForbiddenForUserException(ForbiddenForUserException ex) {
+        log.error(ex.getMessage());
+        return new ResponseEntity(
+                new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage(), System.currentTimeMillis()),
+                HttpStatus.FORBIDDEN);
+    }
 }

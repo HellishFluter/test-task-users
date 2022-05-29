@@ -13,8 +13,10 @@ import java.util.Arrays;
 
 @Getter
 @Setter
-public class UserNewDTO extends UserUpdateDTO{
+public class UserNewDTO extends UserUpdateDTO {
     private BigDecimal cash;
+    private String login;
+    private String password;
 
     public User getEntity(ModelMapper modelMapper) {
         User user = modelMapper.map(this, User.class);
@@ -24,12 +26,11 @@ public class UserNewDTO extends UserUpdateDTO{
                 .user(user)
                 .build());
         user.setPhones(new ArrayList<>());
-        Arrays.stream(this.getPhones()).forEach(phone -> {
-            user.getPhones().add(Phone.builder()
-                            .value(phone)
-                            .user(user)
-                            .build());
-        });
+        Arrays.stream(this.getPhones()).forEach(phone -> user.getPhones().add(
+                Phone.builder()
+                        .value(phone)
+                        .user(user)
+                        .build()));
         return user;
     }
 }
