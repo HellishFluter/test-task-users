@@ -33,7 +33,7 @@ public class UserController {
     //TODO: доступ к getAll можно предоставлять не всем юзерам, однако в рамках данной тестовой задачи
     // роли не выделялись и этот вопрос не решался
     @GetMapping("")
-    public ResponseEntity<List<User>> getAll(
+    public ResponseEntity<Page<User>> getAll(
             @RequestParam Integer page,
             @RequestParam(value = "page-size", defaultValue = "100", required = false) Integer size,
             @RequestParam(required = false) String name,
@@ -49,8 +49,7 @@ public class UserController {
                 .age(age)
                 .build();
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<User> pageUsers = userService.findAll(specification, pageable);
-        return new ResponseEntity<>(pageUsers.getContent(), HttpStatus.OK);
+        return new ResponseEntity<>(userService.findAll(specification, pageable), HttpStatus.OK);
     }
 
 
@@ -78,7 +77,7 @@ public class UserController {
     }
 
     @DeleteMapping("")
-    public ResponseEntity<User> deleteUser() {
+    public ResponseEntity<?> deleteUser() {
         userService.deleteUserById(userData.getUserId());
         return ResponseEntity.ok().build();
     }

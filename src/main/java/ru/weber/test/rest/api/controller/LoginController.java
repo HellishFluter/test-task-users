@@ -42,7 +42,7 @@ public class LoginController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody UserNewDTO userNewDTO) {
+    public ResponseEntity<Token> registerUser(@RequestBody UserNewDTO userNewDTO) {
         if (userCredentialsService.existsByLogin(userNewDTO.getLogin())) {
             throw new LoginExistException(userNewDTO.getLogin());
         }

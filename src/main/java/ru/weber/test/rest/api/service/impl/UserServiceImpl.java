@@ -52,8 +52,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User saveUser(UserNewDTO userDTO) {
-        User user = userDTO.getEntity(modelMapper);
-        user = userRepository.save(user);
+        User user = userRepository.save(User.fromEntity(userDTO));
 
         UserCredential userCredential = modelMapper.map(userDTO, UserCredential.class);
         userCredential.setPassword(passwordEncoder.encode(userDTO.getPassword()));

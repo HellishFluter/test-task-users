@@ -82,11 +82,10 @@ class UserServiceImplTest {
         UserNewDTO userNewDTO = new UserNewDTO();
         userNewDTO.setCash(BigDecimal.valueOf(10));
         userNewDTO.setPhones(new String[]{"+79221234567"});
-        when(modelMapper.map(userNewDTO, User.class)).thenReturn(new User());
         when(modelMapper.map(userNewDTO, UserCredential.class)).thenReturn(new UserCredential());
 
         userService.saveUser(userNewDTO);
-        verify(modelMapper, times(2)).map(any(), any());
+        verify(modelMapper, times(1)).map(any(), any());
         verify(userRepository, times(1)).save(any());
         verify(passwordEncoder, times(1)).encode(any());
         verify(userCredentialRepository, times(1)).save(any());

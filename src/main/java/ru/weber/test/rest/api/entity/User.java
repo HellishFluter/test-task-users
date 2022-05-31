@@ -3,11 +3,14 @@ package ru.weber.test.rest.api.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
+import org.modelmapper.ModelMapper;
+import ru.weber.test.rest.api.dto.UserNewDTO;
 import ru.weber.test.rest.api.dto.UserUpdateDTO;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -73,6 +76,25 @@ public class User {
             }
         }
 
+    }
+
+    public static User fromEntity(UserNewDTO userNewDTO) {
+        User user = new User();
+        user.setName(userNewDTO.getName());
+        user.setAge(userNewDTO.getAge());
+        user.setEmail(userNewDTO.getEmail());
+        user.setProfile(Profile.builder()
+                .cash(userNewDTO.getCash())
+                .maxCash(userNewDTO.getCash().multiply(BigDecimal.valueOf(2.07)))
+                .user(user)
+                .build());
+        user.setPhones(new ArrayList<>());
+        Arrays.stream(userNewDTO.getPhones()).forEach(phone -> user.getPhones().add(
+                Phone.builder()
+                        .value(phone)
+                        .user(user)
+                        .build()));
+        return user;
     }
 
     @Override
